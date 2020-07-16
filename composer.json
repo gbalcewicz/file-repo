@@ -1,0 +1,22 @@
+{
+    "name": "grzes/file-repo",
+    "type": "library",
+    "authors": [
+        {
+            "name": "gbalcewicz",
+            "email": "grzegorz@balcewicz.pl"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Gb\\Example\\": "examples/",
+            "Gb\\FileRepo\\": "src/"
+        }
+    },
+    "require": {
+        "prooph/common": "^4.4",
+        "prooph/event-store": "^7.5",
+        "prooph/pdo-event-store": "^1.12",
+        "prooph/event-sourcing": "^5.6"
+    }
+}
