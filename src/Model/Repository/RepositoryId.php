@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Gb\FileRepo\Model\File;
+namespace Gb\FileRepo\Model\Repository;
 
 use Ramsey\Uuid\Uuid;
 
-final class FileId
+class RepositoryId
 {
-    private string $fileId;
+    private string $repositoryId;
 
     private function __construct(string $fileId)
     {
         if (!Uuid::isValid($fileId)) {
-            throw new \InvalidArgumentException("Given file id is invalid.");
+            throw new \InvalidArgumentException("Given repository id is invalid.");
         }
 
-        $this->fileId = $fileId;
+        $this->repositoryId = $fileId;
     }
 
     public static function fromString(string $fileId): self
@@ -26,7 +26,7 @@ final class FileId
 
     public function toString(): string
     {
-        return $this->fileId;
+        return $this->repositoryId;
     }
 
     public function equals($other): bool
@@ -35,11 +35,11 @@ final class FileId
             return false;
         }
 
-        return $this->fileId === $other->fileId;
+        return $this->repositoryId === $other->repositoryId;
     }
 
     public function __toString(): string
     {
-        return $this->fileId;
+        return $this->repositoryId;
     }
 }

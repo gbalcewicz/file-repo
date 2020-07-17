@@ -7,17 +7,12 @@ namespace Gb\FileRepo\Model\File;
 class UploadedFile
 {
     private Path $path;
-
     private int $size;
-
     private string $mimeType;
-
     private Name $originalName;
-
     private string $checksum;
 
     public function __construct(
-        Directory $baseDir,
         Path $path,
         string $mimeType,
         Name $originalName
