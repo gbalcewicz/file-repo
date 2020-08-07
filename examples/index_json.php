@@ -2,7 +2,7 @@
 
 use Gb\FileRepo\Guard\AlwaysAcceptingGuard;
 use Gb\FileRepo\Implementations\File\JsonRepository;
-use Gb\FileRepo\Key\SizeAndMd5ChecksumUniqueKey;
+use Gb\FileRepo\Key\BaseUniqueKeyGenerator;
 use Gb\FileRepo\Message\ProcessFile;
 use Gb\FileRepo\Storage\RegistryStorage;
 use Gb\FileRepo\UploadedFile;
@@ -23,7 +23,7 @@ $bus = new MessageBus([
 ]);
 
 $repository = new JsonRepository('/tmp/repo.json');
-$storage = new RegistryStorage($repository, new SizeAndMd5ChecksumUniqueKey(), '/tmp/xxx');
+$storage = new RegistryStorage($repository, new BaseUniqueKeyGenerator(), '/tmp/xxx');
 $uploader = new Uploader($bus, new AlwaysAcceptingGuard(), $storage);
 file_put_contents('/tmp/file.txt', sprintf('[%s] something', date('Y-m-d H:i:s')), FILE_APPEND);
 $uploadedFile = new SymfonyUploadedFile('/tmp/file.txt', 'file.txt', 'text/plain', null, true);
