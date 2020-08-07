@@ -2,11 +2,12 @@
 
 use Gb\FileRepo\Guard\AlwaysAcceptingGuard;
 use Gb\FileRepo\Implementations\File\JsonRepository;
-use Gb\FileRepo\Implementations\Pdo\FileRepository;
+use Gb\FileRepo\Key\SizeAndMd5ChecksumUniqueKey;
 use Gb\FileRepo\Message\ProcessFile;
 use Gb\FileRepo\Storage\RegistryStorage;
+use Gb\FileRepo\UploadedFile;
 use Gb\FileRepo\Uploader;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 use Symfony\Component\Messenger\Handler\HandlersLocator;
 use Symfony\Component\Messenger\MessageBus;
 use Symfony\Component\Messenger\Middleware\HandleMessageMiddleware;
@@ -22,9 +23,9 @@ $bus = new MessageBus([
 ]);
 
 $repository = new JsonRepository('/tmp/repo.json');
-$storage = new RegistryStorage($repository, '/tmp/xxx');
+$storage = new RegistryStorage($repository, new SizeAndMd5ChecksumUniqueKey(), '/tmp/xxx');
 $uploader = new Uploader($bus, new AlwaysAcceptingGuard(), $storage);
 file_put_contents('/tmp/file.txt', sprintf('[%s] something', date('Y-m-d H:i:s')), FILE_APPEND);
-$uploadedFile = new UploadedFile('/tmp/file.txt', 'file.txt', 'text/plain', null, true);
+$uploadedFile = new SymfonyUploadedFile('/tmp/file.txt', 'file.txt', 'text/plain', null, true);
 
-$uploader->uploadFile($uploadedFile);
+$uploader->uploadFile(new UploadedFile($uploadedFile));

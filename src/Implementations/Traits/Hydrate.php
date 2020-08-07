@@ -12,6 +12,8 @@ trait Hydrate
 {
     private function hydrate(array $row): File
     {
+        $arguments = json_decode($row['upload_arguments'] ?? '[]', true);
+
         return new File(
             FileId::fromString($row['file_id']),
             File\Path::fromFilePath($row['path']),
@@ -19,7 +21,9 @@ trait Hydrate
             $row['mime_type'],
             (int)$row['size'],
             $row['checksum'],
-            StorageId::fromString($row['storage_id'])
+            StorageId::fromString($row['storage_id']),
+            File\UniqueKey::fromString($row['unique_key'] ?? $row['file_id']),
+            is_array($arguments) ? $arguments : [],
         );
     }
 
@@ -35,7 +39,9 @@ trait Hydrate
             'size' => $file->size(),
             'mime_type' => $file->mimeType(),
             'original_name' => $file->originalName()->toString(),
-            'storage_id' => $file->storageId()->toString()
+            'storage_id' => $file->storageId()->toString(),
+            'unique_key' => $file->key()->toString(),
+            'upload_arguments' => json_encode($file->uploadArguments())
         ];
     }
 }

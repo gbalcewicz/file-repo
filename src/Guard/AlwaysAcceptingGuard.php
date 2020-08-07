@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Gb\FileRepo\Guard;
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Gb\FileRepo\UploadedFile;
 
 class AlwaysAcceptingGuard implements GuardInterface
 {

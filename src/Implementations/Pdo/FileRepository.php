@@ -7,6 +7,7 @@ namespace Gb\FileRepo\Implementations\Pdo;
 use Gb\FileRepo\Implementations\Traits\Hydrate;
 use Gb\FileRepo\Model\File;
 use Gb\FileRepo\Model\File\FileId;
+use Gb\FileRepo\Model\File\UniqueKey;
 use Gb\FileRepo\Repository\FileRepositoryInterface;
 use PDO;
 
@@ -27,7 +28,9 @@ class FileRepository implements FileRepositoryInterface
         'checksum',
         'size',
         'original_name',
-        'storage_id'
+        'storage_id',
+        'upload_arguments',
+        'unique_key'
     ];
 
     public function __construct(PDO $connection)
@@ -35,16 +38,15 @@ class FileRepository implements FileRepositoryInterface
         $this->connection = $connection;
     }
 
-    public function findBySizeAndChecksum(int $size, string $checksum): ?File
+    public function findByKey(UniqueKey $key): ?File
     {
         $sql = <<<EOSQL
-SELECT %s FROM gb_file WHERE size=:size AND checksum=:checksum LIMIT 1
+SELECT %s FROM gb_file WHERE unique_key=:key LIMIT 1
 EOSQL;
 
         $stmt = $this->connection->prepare(sprintf($sql, implode(',', $this->columns)));
         $stmt->execute([
-            ':size' => $size,
-            ':checksum' => $checksum
+            ':key' => $key
         ]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) {

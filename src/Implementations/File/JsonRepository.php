@@ -5,6 +5,7 @@ namespace Gb\FileRepo\Implementations\File;
 use Gb\FileRepo\Implementations\Traits\Hydrate;
 use Gb\FileRepo\Model\File;
 use Gb\FileRepo\Model\File\FileId;
+use Gb\FileRepo\Model\File\UniqueKey;
 use Gb\FileRepo\Repository\FileRepositoryInterface;
 
 class JsonRepository implements FileRepositoryInterface
@@ -27,10 +28,10 @@ class JsonRepository implements FileRepositoryInterface
         }
     }
 
-    public function findBySizeAndChecksum(int $size, string $checksum): ?File
+    public function findByKey(UniqueKey $key): ?File
     {
         foreach ($this->data as $row) {
-            if ($row['size'] === $size && $row['checksum'] === $checksum) {
+            if ($row['unique_key'] === $key) {
                 return $this->hydrate($row);
             }
         }
