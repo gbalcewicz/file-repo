@@ -19,20 +19,23 @@ class RegistryStorage implements StorageInterface
     private FileRepositoryInterface $fileRepository;
     private Directory $baseDir;
     private UniqueKeyGeneratorInterface $uniqueKeyGenerator;
+    private StorageId $storageId;
 
     public function __construct(
         FileRepositoryInterface $fileRepository,
         UniqueKeyGeneratorInterface $uniqueKeyGenerator,
-        string $baseDir
+        string $baseDir,
+        string $storageId = null
     ) {
         $this->fileRepository = $fileRepository;
         $this->baseDir = Directory::create($baseDir);
         $this->uniqueKeyGenerator = $uniqueKeyGenerator;
+        $this->storageId = StorageId::fromString($storageId ?? sprintf('reg-%s', sha1($this->baseDir->toString())));
     }
 
     public function id(): StorageId
     {
-        return StorageId::fromString(sprintf('reg-%s', sha1($this->baseDir->toString())));
+        return $this->storageId;
     }
 
     public function findFile(UploadedFile $uploadedFile): ?File

@@ -89,7 +89,7 @@ EOSQL;
 SELECT %s FROM gb_file WHERE file_id=:file_id LIMIT 1
 EOSQL;
 
-        $stmt = $this->connection->query(sprintf($sql, implode(',', $this->columns)));
+        $stmt = $this->connection->prepare(sprintf($sql, implode(',', $this->columns)));
         $stmt->execute([
             ':file_id' => $fileId->toString()
         ]);
