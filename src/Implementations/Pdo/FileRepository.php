@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Gb\FileRepo\Implementations\Pdo;
 
+use Gb\FileRepo\Implementations\Traits\Hydrate;
 use Gb\FileRepo\Model\File;
 use Gb\FileRepo\Model\File\FileId;
 use Gb\FileRepo\Repository\FileRepositoryInterface;
-use Gb\FileRepo\Storage\StorageId;
 use PDO;
 
 class FileRepository implements FileRepositoryInterface
 {
+    use Hydrate;
+
     private PDO $connection;
 
     private $columns = [
@@ -104,34 +106,5 @@ EOSQL;
         $stmt->execute([
             'file_id' => $fileId->toString()
         ]);
-    }
-
-    private function hydrate(array $row): File
-    {
-        return new File(
-            FileId::fromString($row['file_id']),
-            File\Path::fromFilePath($row['path']),
-            File\Name::createFromFullName($row['original_name']),
-            $row['mime_type'],
-            (int)$row['size'],
-            $row['checksum'],
-            StorageId::fromString($row['storage_id'])
-        );
-    }
-
-    private function toArray(File $file)
-    {
-        return [
-            'file_id' => $file->fileId()->toString(),
-            'location' => $file->path()->dir()->toString(),
-            'base_name' => $file->path()->name()->baseName(),
-            'extension' => $file->path()->name()->extension(),
-            'path' => $file->path()->fullPath(),
-            'checksum' => $file->checksum(),
-            'size' => $file->size(),
-            'mime_type' => $file->mimeType(),
-            'original_name' => $file->originalName()->toString(),
-            'storage_id' => $file->storageId()->toString()
-        ];
     }
 }
