@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Gb\FileRepo\Implementations\Pdo;
 
+use Gb\FileRepo\Implementations\Traits\Hydrate;
 use Gb\FileRepo\Model\File;
 use Gb\FileRepo\Model\File\FileId;
+use Gb\FileRepo\Model\File\UniqueKey;
 use Gb\FileRepo\Repository\FileRepositoryInterface;
-use Gb\FileRepo\Storage\StorageId;
 use PDO;
 
 class FileRepository implements FileRepositoryInterface
 {
+    use Hydrate;
+
     private PDO $connection;
 
     private $columns = [
@@ -25,7 +28,9 @@ class FileRepository implements FileRepositoryInterface
         'checksum',
         'size',
         'original_name',
-        'storage_id'
+        'storage_id',
+        'upload_arguments',
+        'unique_key'
     ];
 
     public function __construct(PDO $connection)
@@ -33,16 +38,15 @@ class FileRepository implements FileRepositoryInterface
         $this->connection = $connection;
     }
 
-    public function findBySizeAndChecksum(int $size, string $checksum): ?File
+    public function findByKey(UniqueKey $key): ?File
     {
         $sql = <<<EOSQL
-SELECT %s FROM gb_file WHERE size=:size AND checksum=:checksum LIMIT 1
+SELECT %s FROM gb_file WHERE unique_key=:key LIMIT 1
 EOSQL;
 
         $stmt = $this->connection->prepare(sprintf($sql, implode(',', $this->columns)));
         $stmt->execute([
-            ':size' => $size,
-            ':checksum' => $checksum
+            ':key' => $key
         ]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) {
@@ -85,7 +89,7 @@ EOSQL;
 SELECT %s FROM gb_file WHERE file_id=:file_id LIMIT 1
 EOSQL;
 
-        $stmt = $this->connection->query(sprintf($sql, implode(',', $this->columns)));
+        $stmt = $this->connection->prepare(sprintf($sql, implode(',', $this->columns)));
         $stmt->execute([
             ':file_id' => $fileId->toString()
         ]);
@@ -104,34 +108,5 @@ EOSQL;
         $stmt->execute([
             'file_id' => $fileId->toString()
         ]);
-    }
-
-    private function hydrate(array $row): File
-    {
-        return new File(
-            FileId::fromString($row['file_id']),
-            File\Path::fromFilePath($row['path']),
-            File\Name::createFromFullName($row['original_name']),
-            $row['mime_type'],
-            (int)$row['size'],
-            $row['checksum'],
-            StorageId::fromString($row['storage_id'])
-        );
-    }
-
-    private function toArray(File $file)
-    {
-        return [
-            'file_id' => $file->fileId()->toString(),
-            'location' => $file->path()->dir()->toString(),
-            'base_name' => $file->path()->name()->baseName(),
-            'extension' => $file->path()->name()->extension(),
-            'path' => $file->path()->fullPath(),
-            'checksum' => $file->checksum(),
-            'size' => $file->size(),
-            'mime_type' => $file->mimeType(),
-            'original_name' => $file->originalName()->toString(),
-            'storage_id' => $file->storageId()->toString()
-        ];
     }
 }

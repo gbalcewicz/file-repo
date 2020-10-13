@@ -12,6 +12,8 @@ CREATE TABLE gb_file (
     size BIGINT UNSIGNED NOT NULL,
     original_name VARCHAR(255),
     storage_id VARCHAR (255),
+    upload_arguments TEXT,
+    unique_key VARCHAR(255),
     PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX udx_file_id ON gb_file(file_id);

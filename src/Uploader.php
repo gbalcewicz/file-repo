@@ -9,7 +9,6 @@ use Gb\FileRepo\Guard\GuardInterface;
 use Gb\FileRepo\Message\ProcessFile;
 use Gb\FileRepo\Model\File;
 use Gb\FileRepo\Storage\StorageInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class Uploader
@@ -28,7 +27,7 @@ class Uploader
         $this->storageInterface = $storageInterface;
     }
 
-    public function uploadFile(UploadedFile $uploadedFile): ?File
+    public function uploadFile(UploadedFile $uploadedFile, array $arguments = []): ?File
     {
         if ($this->guard->check($uploadedFile)->equals(CheckResult::rejected())) {
             return null;

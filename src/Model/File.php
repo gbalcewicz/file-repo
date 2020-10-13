@@ -7,6 +7,7 @@ namespace Gb\FileRepo\Model;
 use Gb\FileRepo\Model\File\FileId;
 use Gb\FileRepo\Model\File\Name;
 use Gb\FileRepo\Model\File\Path;
+use Gb\FileRepo\Model\File\UniqueKey;
 use Gb\FileRepo\Storage\StorageId;
 
 class File
@@ -18,6 +19,9 @@ class File
     private int $size;
     private string $checksum;
     private StorageId $storageId;
+    private array $uploadArguments;
+    private UniqueKey $uniqueKey;
+    private UniqueKey $key;
 
     public function __construct(
         FileId $fileId,
@@ -26,7 +30,9 @@ class File
         string $mimeType,
         int $size,
         string $checksum,
-        StorageId $storageId
+        StorageId $storageId,
+        UniqueKey $uniqueKey,
+        array $uploadArguments
     ) {
         $this->fileId = $fileId;
         $this->path = $path;
@@ -35,6 +41,8 @@ class File
         $this->size = $size;
         $this->checksum = $checksum;
         $this->storageId = $storageId;
+        $this->uniqueKey = $uniqueKey;
+        $this->uploadArguments = $uploadArguments;
     }
 
     public function fileId(): FileId
@@ -75,5 +83,15 @@ class File
     public function name(): Name
     {
         return $this->path->name();
+    }
+
+    public function key(): UniqueKey
+    {
+        return $this->uniqueKey;
+    }
+
+    public function uploadArguments(): array
+    {
+        return $this->uploadArguments;
     }
 }

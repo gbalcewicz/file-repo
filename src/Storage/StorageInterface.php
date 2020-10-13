@@ -6,7 +6,7 @@ namespace Gb\FileRepo\Storage;
 
 use Gb\FileRepo\Model\File;
 use Gb\FileRepo\Model\File\Path;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Gb\FileRepo\UploadedFile;
 
 interface StorageInterface
 {
