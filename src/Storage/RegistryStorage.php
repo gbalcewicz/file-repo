@@ -75,4 +75,9 @@ class RegistryStorage implements StorageInterface
     {
         return $file->path()->asRelativeTo($this->baseDir);
     }
+
+    public function getBaseDir(): Directory
+    {
+        return clone $this->baseDir;
+    }
 }
